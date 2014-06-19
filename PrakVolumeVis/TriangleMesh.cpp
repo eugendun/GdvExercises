@@ -36,6 +36,13 @@ void TriangleMesh::clear() {
   normals.clear();
 }
 
+void TriangleMesh::addTriangle(Vec3f* t) {
+	vertices.push_back(t[0]);
+	vertices.push_back(t[1]);
+	vertices.push_back(t[2]);
+	triangles.push_back(Vec3i(vertices.size() - 3, vertices.size() - 2, vertices.size() - 1));
+}
+
 // ================
 // === RAW DATA ===
 // ================

@@ -15,7 +15,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <GL/glut.h>
+//#include <GL/glut.h>
 #include "VolumeVisualization.h"
 #include "config.h"
 
@@ -28,7 +28,7 @@ void initialize();
 void changeSize(int w, int h);
 
 // Rendering
-
+/*
 void renderScene(void);
 
 // Callbacks
@@ -40,9 +40,12 @@ void mousePressed(int button, int state, int x, int y);
 void mouseMoved(int x, int y);
 
 // Volume Vis
+*/
 
 VolumeVisualization volumevis;
 
+/*
 void drawPoints(float isovalue);
 
 void drawMesh(float isovalue);
+*/

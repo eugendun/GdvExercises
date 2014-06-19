@@ -28,7 +28,32 @@ void VolumeVisualization::loadRAW(std::istream& in, int dimX, int dimY, int dimZ
 }
 
 void VolumeVisualization::computeMesh(float isovalue)	{
-	//TODO
+	MC_TRIANGLE triangles[8];
+	for (int z = 0; z < dimension.z - 1; ++z)	{
+		for (int y = 0; y < dimension.y - 1; ++y)	{
+			for (int x = 0; x < dimension.x - 1; ++x)	{
+				volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x);
+				GRIDCELL cell;
+				cell.p[0] = Vec3f(x, y, z);
+				cell.p[1] = Vec3f(x + 1, y, z);
+				cell.p[2] = Vec3f(x + 1, y + 1, z);
+				cell.p[3] = Vec3f(x, y + 1, z);
+				cell.p[4] = Vec3f(x, y, z + 1);
+				cell.p[5] = Vec3f(x + 1, y, z + 1);
+				cell.p[6] = Vec3f(x + 1, y + 1, z + 1);
+				cell.p[7] = Vec3f(x, y + 1, z + 1);
+
+				for (int i = 0; i < 8; i++) {
+					cell.val[i] = volumedata.at(cell.p[i].z*dimension.x*dimension.y + cell.p[i].y*dimension.x + cell.p[i].x);
+				}
+
+				int numTriangles = Polygonise(cell, isovalue, triangles);
+				for (int i = 0; i < numTriangles; i++) {
+					mesh.addTriangle(triangles[i].p);
+				}
+			}
+		}
+	}
 }
 
 unsigned int VolumeVisualization::Polygonise(GRIDCELL grid,float isolevel,MC_TRIANGLE *triangles) {
