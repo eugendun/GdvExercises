@@ -51,7 +51,7 @@ public:
   // clears all data, sets defaults
   void clear();
 
-  void addTriangle(Vec3f* t);
+  void addTriangle(Vec3f* p, Vec3f* n);
 
   // ================
   // === RAW DATA ===

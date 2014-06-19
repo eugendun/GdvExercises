@@ -36,10 +36,13 @@ void TriangleMesh::clear() {
   normals.clear();
 }
 
-void TriangleMesh::addTriangle(Vec3f* t) {
-	vertices.push_back(t[0]);
-	vertices.push_back(t[1]);
-	vertices.push_back(t[2]);
+void TriangleMesh::addTriangle(Vec3f* p, Vec3f* n) {
+	vertices.push_back(p[0]);
+	vertices.push_back(p[1]);
+	vertices.push_back(p[2]);
+	normals.push_back(n[0]);
+	normals.push_back(n[1]);
+	normals.push_back(n[2]);
 	triangles.push_back(Vec3i(vertices.size() - 3, vertices.size() - 2, vertices.size() - 1));
 }
 

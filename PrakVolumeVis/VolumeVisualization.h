@@ -29,13 +29,16 @@ class VolumeVisualization {
 
 	typedef struct {
 		Vec3f p[8];
+		Vec3f n[8];
 		float val[8];
-	} GRIDCELL;  
+	} GRIDCELL;
 
 	typedef std::vector<float> VolumeData;
+	typedef std::vector<Vec3f> VolumeNormals;
 
 	// data
 	VolumeData volumedata;
+	VolumeNormals volumenormals;
 	Vec3i dimension;
 	Vec3f spacing;
 
@@ -84,7 +87,6 @@ public:
 	// Linearly interpolate the position where an isosurface cuts an
 	//  edge between two vertices, each with their own scalar value
 	Vec3f VertexInterp(float isolevel, Vec3f p1, Vec3f p2, float valp1, float valp2);
-
 };
 
 #endif
