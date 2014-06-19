@@ -1,0 +1,1 @@
+#define DATASETPATH "${PROJECT_SOURCE_DIR}/neghip.raw"
