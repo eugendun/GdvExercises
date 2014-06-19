@@ -15,7 +15,7 @@
 // Window size information
 float wRatio;
 int wSizeH=600, wSizeW=400;
-//GLdouble near1 = 0.1, far1 = 30;
+GLdouble near1 = 0.1, far1 = 30;
 // Camera information
 Vec3f camPos(0.5f, 0.5f, -2.0f);        // camera position
 Vec3f camDir(0.0f, 0.0f, 1.0f);         // camera lookat (always Z)
@@ -28,28 +28,28 @@ float mouseSensitivy = 1.0f;
 float isovalue = 0.3; 
 
 int main(int argc, char **argv) {
-  //glutInit(&argc, argv);
-  //glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-  //glutInitWindowPosition(200,200);
-  //glutInitWindowSize(wSizeH,wSizeW);
-  //glutCreateWindow("Volume Visualization");  
-  //glutIgnoreKeyRepeat(1);
-  //glutKeyboardFunc(keyPressed);
-  //glutMouseFunc(mousePressed);
-  //glutMotionFunc(mouseMoved);  
-  //glutDisplayFunc(renderScene);
-  //glutReshapeFunc(changeSize);  
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+  glutInitWindowPosition(200,200);
+  glutInitWindowSize(wSizeH,wSizeW);
+  glutCreateWindow("Volume Visualization");  
+  glutIgnoreKeyRepeat(1);
+  glutKeyboardFunc(keyPressed);
+  glutMouseFunc(mousePressed);
+  glutMotionFunc(mouseMoved);  
+  glutDisplayFunc(renderScene);
+  glutReshapeFunc(changeSize);  
   initialize();
-  //glutMainLoop();  
+  glutMainLoop();  
   return 0;
 }
 
 void initialize() {
-  //glClearColor(1.0,1.0,1.0,0.0);
+  glClearColor(1.0,1.0,1.0,0.0);
   // enable depth buffer
-  //glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);
   // shading model
-  //glShadeModel(GL_SMOOTH);
+  glShadeModel(GL_SMOOTH);
   // size window
   changeSize(wSizeH,wSizeW);
   // load a volume data set
@@ -68,21 +68,20 @@ void changeSize(int w, int h) {
   if(h == 0) h = 1;
   float wRatio = 1.0* w / h;
   // Reset the coordinate system before modifying
-  //glMatrixMode(GL_PROJECTION);
-  //glLoadIdentity();	
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();	
   // Set the viewport to be the entire window
-  //glViewport(0, 0, w, h);
+  glViewport(0, 0, w, h);
   // Set the correct perspective.
-  //gluPerspective(45,wRatio,near1,far1);
-  //glMatrixMode(GL_MODELVIEW);
-  //glLoadIdentity();
-  //gluLookAt(camPos.x,             camPos.y,             camPos.z,               // Position
-  //          camPos.x + camDir.x,  camPos.y + camDir.y,  camPos.z + camDir.z,    // Lookat
-//	          camUp.x,              camUp.y,              camUp.z);               // Up-direction
+  gluPerspective(45,wRatio,near1,far1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  gluLookAt(camPos.x,             camPos.y,             camPos.z,               // Position
+            camPos.x + camDir.x,  camPos.y + camDir.y,  camPos.z + camDir.z,    // Lookat
+	          camUp.x,              camUp.y,              camUp.z);               // Up-direction
 }
 
 // Rendering
-/*
 void renderScene(void) {
   // clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
@@ -99,9 +98,8 @@ void renderScene(void) {
   // swap Buffers
   glutSwapBuffers();
 }
-*/
+
 // Callbacks
-/*
 void keyPressed(unsigned char key, int x, int y) {
   float increment = 0.05;
   switch (key) {
@@ -223,4 +221,3 @@ void drawMesh(float isovalue)	{
 	//TODO
 
 }
-*/
