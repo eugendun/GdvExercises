@@ -25,7 +25,7 @@ float camAngleX=0.0f, camAngleY=0.0f;   // camera angles
 int mouseX, mouseY, mouseButton;
 float mouseSensitivy = 1.0f;
 // Iso surface information
-float isovalue = 0.3; 
+float isovalue = 0.3;
 
 int main(int argc, char **argv) {
   glutInit(&argc, argv);
@@ -54,8 +54,10 @@ void initialize() {
   changeSize(wSizeH,wSizeW);
   // load a volume data set
   std::ifstream vin(DATASETPATH, std::ios::binary);  
-  volumevis.loadRAW(vin, 64, 64, 64);
-  volumevis.computeMesh(0.01);
+  //volumevis.loadRAW(vin, 64, 64, 64);
+  volumevis.loadBarthsSextic(1024, 1024, 1024, 8, 8, 8);
+  volumevis.computeMesh(isovalue);
+  std::cout << "saving" << std::endl;
   volumevis.getMesh()->saveAsPly("MarchingCubesOutput");
   // cout
   std::cout << "(Simple) Volume Data Visualization\n";
@@ -202,10 +204,10 @@ void drawPoints(float isovalue)	{
 	glScalef(scaleFac, scaleFac, scaleFac);
 	glPointSize(2.0);
 	glBegin(GL_POINTS);
-	for (int z = 0; z < dimension->z; ++z)	{
-		for (int y = 0; y < dimension->y; ++y)	{
-			for (int x = 0; x < dimension->x; ++x)	{
-				float value = volumeData->at(z*dimension->x*dimension->y + y*dimension->x + x);
+	for (int z = 0; z < dimension->z; z += spacing->z)	{
+		for (int y = 0; y < dimension->y; y += spacing->y)	{
+			for (int x = 0; x < dimension->x; x += spacing->x)	{
+				float value = volumeData->at(volumevis.indexForCoordinates(x, y, z));
 				if (value > isovalue)	{
 					glColor3f(value,value,value);
 					glVertex3f(x,y,z);

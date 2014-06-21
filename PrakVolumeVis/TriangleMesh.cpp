@@ -91,11 +91,17 @@ TriangleMesh::Normals&  TriangleMesh::getNormals() {
 		for (int i = 0; i < vertices.size(); i++)
 		{
 			file << vertices[i].x << " " << vertices[i].y << " " << vertices[i].z << " \n";
+			if (i % 100 == 0) {
+				std::cout << "vertex " << i << " / " << vertices.size() << std::endl;
+			}
 		}
 	}
 	for (int i = 0; i < triangles.size(); i++)
 		{
 			file << "3 " << triangles[i].x << " " << triangles[i].y << " " << triangles[i].z << " \n";
+			if (i % 100 == 0) {
+				std::cout << "tri " << i << " / " << triangles.size() << std::endl;
+			}
 		}
 	
 	file.close();

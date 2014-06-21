@@ -22,17 +22,17 @@ void VolumeVisualization::loadRAW(std::istream& in, int dimX, int dimY, int dimZ
 	volumedata.clear();
 	volumedata.resize(dimX*dimY*dimZ);
 	// we know the bit depth (8 bits by now), so all that's left is to cast each char to a float between [0,1) 
-	for (int i = 0; i < dimX*dimY*dimZ; ++i) {
+	for (int i = 0; i < dimX*dimY*dimZ; ++i) {	// TODO: include spacing: "/spacing"
 		volumedata[i] = ((unsigned char)in.get())/256.0f;
 	}
 
 	// calculate a normal for each density value via central differences
 	volumenormals.clear();
 	volumenormals.resize(dimX*dimY*dimZ);
-	for (int z = 0; z < dimension.z; ++z)	{
-		for (int y = 0; y < dimension.y; ++y)	{
-			for (int x = 0; x < dimension.x; ++x)	{
-				float x0 = (x > 0)?               volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x - 1) : 0;
+	for (int z = 0; z < dimension.z; z += spacing.z)	{
+		for (int y = 0; y < dimension.y; y += spacing.y)	{
+			for (int x = 0; x < dimension.x; x += spacing.x)	{
+				float x0 = (x > 0) ? volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x - 1) : 0;
 				float x1 = (x < dimension.x - 1)? volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x + 1) : 0;
 
 				float y0 = (y > 0) ? volumedata.at(z*dimension.x*dimension.y + (y-1)*dimension.x + x) : 0;
@@ -49,29 +49,83 @@ void VolumeVisualization::loadRAW(std::istream& in, int dimX, int dimY, int dimZ
 	}
 }
 
+void VolumeVisualization::loadBarthsSextic(int dimX, int dimY, int dimZ, float dx, float dy, float dz) {
+	//spacing.x = dx; spacing.y = dy; spacing.z = dz;
+	spacing.x = 1; spacing.y = 1; spacing.z = 1;
+	dimension.x = dimX / dx; dimension.y = dimY / dy; dimension.z = dimZ / dz;
+	volumedata.clear();
+	volumedata.resize(dimension.x*dimension.y*dimension.z / (spacing.x*spacing.y*spacing.z));
+
+	const float W = 1;
+
+	// calculate sextic function
+	for (int z = 0; z < dimension.z; z += spacing.z)	{
+		for (int y = 0; y < dimension.y; y += spacing.y)	{
+			for (int x = 0; x < dimension.x; x += spacing.x)	{
+				volumedata[indexForCoordinates(x, y, z)] = evaluateBarthsSextic((x - dimension.x / 2) * dx, (y - dimension.y / 2) * dy, (z - dimension.z / 2) * dz, W);
+			}
+		}
+	}
+
+	// calculate a normal for each density value via central differences
+	volumenormals.clear();
+	/*
+	volumenormals.resize(dimension.x*dimension.y*dimension.z / (spacing.x*spacing.y*spacing.z));
+	for (int z = 0; z < dimension.z; z += spacing.z)	{
+		for (int y = 0; y < dimension.y; y += spacing.y)	{
+			for (int x = 0; x < dimension.x; x += spacing.x)	{
+				float x0 = (x > 0) ? volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x - 1) : 0;
+				float x1 = (x < dimension.x - 1) ? volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x + 1) : 0;
+
+				float y0 = (y > 0) ? volumedata.at(z*dimension.x*dimension.y + (y - 1)*dimension.x + x) : 0;
+				float y1 = (y < dimension.y - 1) ? volumedata.at(z*dimension.x*dimension.y + (y + 1)*dimension.x + x) : 0;
+
+				float z0 = (z > 0) ? volumedata.at((z - 1)*dimension.x*dimension.y + y*dimension.x + x) : 0;
+				float z1 = (z < dimension.z - 1) ? volumedata.at((z + 1)*dimension.x*dimension.y + y*dimension.x + x) : 0;
+
+				Vec3f normal = Vec3f(x1 - x0, y1 - y0, z1 - z0);
+				normal *= -1;
+				volumenormals[z*dimension.x*dimension.y + y*dimension.x + x] = normal.normalized();
+			}
+		}
+	}*/
+}
+
+float VolumeVisualization::evaluateBarthsSextic(float x, float y, float z, float w) {
+	float phi = 1.618034;
+	float result = 4 * (phi * phi * x * x - y * y) * (phi * phi * y * y - z * z) * (phi * phi * z * z - x * x) - (1 + 2 * phi) * (x * x + y * y + z * z - w * w) * (x * x + y * y + z * z - w * w) * w * w;
+	return -result;
+}
+
+float VolumeVisualization::indexForCoordinates(float x, float y, float z) {
+	return (z/spacing.z) * (dimension.x/spacing.x) * (dimension.y/spacing.y) + (y/spacing.y)*(dimension.x/spacing.x) + (x/spacing.x);
+}
+
 void VolumeVisualization::computeMesh(float isovalue)	{
 	MC_TRIANGLE triangles[8];
-	for (int z = 0; z < dimension.z - 1; ++z)	{
-		for (int y = 0; y < dimension.y - 1; ++y)	{
-			for (int x = 0; x < dimension.x - 1; ++x)	{
-				volumedata.at(z*dimension.x*dimension.y + y*dimension.x + x);
+	for (int z = 0; z < dimension.z - spacing.z; z += spacing.z)	{
+		for (int y = 0; y < dimension.y - spacing.y; y += spacing.y)	{
+			for (int x = 0; x < dimension.x - spacing.x; x += spacing.x)	{
+				volumedata.at(indexForCoordinates(x, y, z));
 				GRIDCELL cell;
 
 				// set position for each corner
 				cell.p[0] = Vec3f(x, y, z);
-				cell.p[1] = Vec3f(x + 1, y, z);
-				cell.p[2] = Vec3f(x + 1, y + 1, z);
-				cell.p[3] = Vec3f(x, y + 1, z);
-				cell.p[4] = Vec3f(x, y, z + 1);
-				cell.p[5] = Vec3f(x + 1, y, z + 1);
-				cell.p[6] = Vec3f(x + 1, y + 1, z + 1);
-				cell.p[7] = Vec3f(x, y + 1, z + 1);
+				cell.p[1] = Vec3f(x + spacing.x, y, z);
+				cell.p[2] = Vec3f(x + spacing.x, y + spacing.y, z);
+				cell.p[3] = Vec3f(x, y + spacing.y, z);
+				cell.p[4] = Vec3f(x, y, z + spacing.z);
+				cell.p[5] = Vec3f(x + spacing.x, y, z + spacing.z);
+				cell.p[6] = Vec3f(x + spacing.x, y + spacing.y, z + spacing.z);
+				cell.p[7] = Vec3f(x, y + spacing.y, z + spacing.z);
 
 				// fill with density value and normal for each corner
 				for (int i = 0; i < 8; i++) {
-					int dataIndex = cell.p[i].z*dimension.x*dimension.y + cell.p[i].y*dimension.x + cell.p[i].x;
+					int dataIndex = indexForCoordinates(cell.p[i].x/spacing.x, cell.p[i].y/spacing.y, cell.p[i].z/spacing.z);
 					cell.val[i] = volumedata.at(dataIndex);
-					cell.n[i] = volumenormals.at(dataIndex);
+					if (volumenormals.size() > 0) {
+						cell.n[i] = volumenormals.at(dataIndex);
+					}
 				}
 
 				int numTriangles = Polygonise(cell, isovalue, triangles);
@@ -80,6 +134,8 @@ void VolumeVisualization::computeMesh(float isovalue)	{
 				}
 			}
 		}
+
+		std::cout << z << " / " << dimension.z << std::endl;
 	}
 }
 
@@ -156,9 +212,12 @@ unsigned int VolumeVisualization::Polygonise(GRIDCELL grid,float isolevel,MC_TRI
     triangles[ntriang].p[1] = vertlist[triTable[cubeindex][i+1]];
 	triangles[ntriang].p[2] = vertlist[triTable[cubeindex][i+2]];
 
-	triangles[ntriang].g[0] = normallist[triTable[cubeindex][i]];
-	triangles[ntriang].g[1] = normallist[triTable[cubeindex][i + 1]];
-	triangles[ntriang].g[2] = normallist[triTable[cubeindex][i + 2]];
+	if (volumenormals.size() > 0) {
+		triangles[ntriang].g[0] = normallist[triTable[cubeindex][i]];
+		triangles[ntriang].g[1] = normallist[triTable[cubeindex][i + 1]];
+		triangles[ntriang].g[2] = normallist[triTable[cubeindex][i + 2]];
+	}
+
 	ntriang++;
   }
   return(ntriang);

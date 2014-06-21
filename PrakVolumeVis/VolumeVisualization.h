@@ -72,6 +72,7 @@ public:
 	//
 
 	void loadRAW(std::istream& in, int dimX, int dimY, int dimZ, float dx=1, float dy=1, float dz=1);
+	void loadBarthsSextic(int dimX, int dimY, int dimZ, float dx = 1, float dy = 1, float dz = 1);
 
 	void computeMesh(float isovalue);
 
@@ -87,6 +88,12 @@ public:
 	// Linearly interpolate the position where an isosurface cuts an
 	//  edge between two vertices, each with their own scalar value
 	Vec3f VertexInterp(float isolevel, Vec3f p1, Vec3f p2, float valp1, float valp2);
+
+	float indexForCoordinates(float x, float y, float z);
+
+private:
+
+	float evaluateBarthsSextic(float x, float y, float z, float w);
 };
 
 #endif
