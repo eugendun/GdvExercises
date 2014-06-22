@@ -54,8 +54,8 @@ void initialize() {
   changeSize(wSizeH,wSizeW);
   // load a volume data set
   std::ifstream vin(DATASETPATH, std::ios::binary);  
-  //volumevis.loadRAW(vin, 64, 64, 64);
-  volumevis.loadBarthsSextic(1024, 1024, 1024, 8, 8, 8);
+  volumevis.loadRAW(vin, 64, 64, 64);
+  //volumevis.loadBarthsSextic(1024, 1024, 1024, 8, 8, 8);
   volumevis.computeMesh(isovalue);
   std::cout << "saving" << std::endl;
   volumevis.getMesh()->saveAsPly("MarchingCubesOutput");

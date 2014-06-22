@@ -36,14 +36,47 @@ void TriangleMesh::clear() {
   normals.clear();
 }
 
+void TriangleMesh::addTriangle(Vec3f* p) {
+	addTriangle(p, new Vec3f());
+}
+
 void TriangleMesh::addTriangle(Vec3f* p, Vec3f* n) {
-	vertices.push_back(p[0]);
-	vertices.push_back(p[1]);
-	vertices.push_back(p[2]);
-	normals.push_back(n[0]);
-	normals.push_back(n[1]);
-	normals.push_back(n[2]);
-	triangles.push_back(Vec3i(vertices.size() - 3, vertices.size() - 2, vertices.size() - 1));
+
+	// REMARKS: BONUS EXERCISE (b)
+	// return, if degenerated triangle
+	if (((p[0] - p[1]).sqlength() < 0.00001) || ((p[0] - p[2]).sqlength() < 0.00001) || ((p[1] - p[2]).sqlength() < 0.00001)) {
+		return;
+	}
+
+
+	Vec3i indices = Vec3i(-1, -1, -1);
+
+	for (int j = 0; j < 3; j++) {
+
+		// look, if this vertex has already been saved
+		// REMARKS: BONUS EXERCISE (a) - deactivated, because too slow for debugging
+		/*
+		for (int i = 0; i < vertices.size(); i++) {
+			if ((abs(vertices[i].x - p[j].x) < 0.0001) && (abs(vertices[i].y - p[j].y) < 0.0001) && (abs(vertices[i].z - p[j].z) < 0.0001)) {
+				indices[j] = i;
+				break;
+			}
+		}
+		*/
+
+		// save, if not found
+		if (indices[j] < 0) {
+			vertices.push_back(p[j]);
+
+			if (n->sqlength() > 0.0001) {
+				normals.push_back(n[j]);
+			}
+
+			indices[j] = vertices.size() - 1;
+		}
+	}
+	
+	triangles.push_back(indices);
 }
 
 // ================

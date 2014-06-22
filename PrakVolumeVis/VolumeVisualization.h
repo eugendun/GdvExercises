@@ -87,7 +87,7 @@ public:
 
 	// Linearly interpolate the position where an isosurface cuts an
 	//  edge between two vertices, each with their own scalar value
-	Vec3f VertexInterp(float isolevel, Vec3f p1, Vec3f p2, float valp1, float valp2);
+	Vec3f VertexInterp(float isolevel, Vec3f p1, Vec3f p2, float valp1, float valp2, float snapEpsilon = 0.0);
 
 	float indexForCoordinates(float x, float y, float z);
 

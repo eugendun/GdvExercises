@@ -16,6 +16,8 @@
 #include "TriangleMesh.h"
 #include "dualpointslist.h"
 
+#define SNAP_EPSILON 0.4
+
 void VolumeVisualization::loadRAW(std::istream& in, int dimX, int dimY, int dimZ, float dx, float dy, float dz) {
 	spacing.x = dx; spacing.y = dy; spacing.z = dz; 
 	dimension.x = dimX; dimension.y = dimY; dimension.z = dimZ; 
@@ -158,51 +160,51 @@ unsigned int VolumeVisualization::Polygonise(GRIDCELL grid,float isolevel,MC_TRI
     return(0);
   // Find the edges where the surface intersects the cube
   if (edgeTable[cubeindex] & 1) {
-	  vertlist[0]   = VertexInterp(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
+	  vertlist[0]   = VertexInterp(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1], SNAP_EPSILON);
 	  normallist[0] = VertexInterp(isolevel, grid.n[0], grid.n[1], grid.val[0], grid.val[1]);
   }
   if (edgeTable[cubeindex] & 2) {
-	  vertlist[1] = VertexInterp(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
+	  vertlist[1] = VertexInterp(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2], SNAP_EPSILON);
 	  normallist[1] = VertexInterp(isolevel, grid.n[1], grid.n[2], grid.val[1], grid.val[2]);
   }
   if (edgeTable[cubeindex] & 4) {
-	  vertlist[2] = VertexInterp(isolevel, grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
+	  vertlist[2] = VertexInterp(isolevel, grid.p[2], grid.p[3], grid.val[2], grid.val[3], SNAP_EPSILON);
 	  normallist[2] = VertexInterp(isolevel, grid.n[2], grid.n[3], grid.val[2], grid.val[3]);
   }
   if (edgeTable[cubeindex] & 8) {
-	  vertlist[3] = VertexInterp(isolevel, grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
+	  vertlist[3] = VertexInterp(isolevel, grid.p[3], grid.p[0], grid.val[3], grid.val[0], SNAP_EPSILON);
 	  normallist[3] = VertexInterp(isolevel, grid.n[3], grid.n[0], grid.val[3], grid.val[0]);
   }
   if (edgeTable[cubeindex] & 16) {
-	  vertlist[4] = VertexInterp(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
+	  vertlist[4] = VertexInterp(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5], SNAP_EPSILON);
 	  normallist[4] = VertexInterp(isolevel, grid.n[4], grid.n[5], grid.val[4], grid.val[5]);
   }
   if (edgeTable[cubeindex] & 32) {
-	  vertlist[5] = VertexInterp(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
+	  vertlist[5] = VertexInterp(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6], SNAP_EPSILON);
 	  normallist[5] = VertexInterp(isolevel, grid.n[5], grid.n[6], grid.val[5], grid.val[6]);
   }
   if (edgeTable[cubeindex] & 64) {
-	  vertlist[6] = VertexInterp(isolevel, grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
+	  vertlist[6] = VertexInterp(isolevel, grid.p[6], grid.p[7], grid.val[6], grid.val[7], SNAP_EPSILON);
 	  normallist[6] = VertexInterp(isolevel, grid.n[6], grid.n[7], grid.val[6], grid.val[7]);
   }
   if (edgeTable[cubeindex] & 128) {
-	  vertlist[7] = VertexInterp(isolevel, grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
+	  vertlist[7] = VertexInterp(isolevel, grid.p[7], grid.p[4], grid.val[7], grid.val[4], SNAP_EPSILON);
 	  normallist[7] = VertexInterp(isolevel, grid.n[7], grid.n[4], grid.val[7], grid.val[4]);
   }
   if (edgeTable[cubeindex] & 256) {
-	  vertlist[8] = VertexInterp(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
+	  vertlist[8] = VertexInterp(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4], SNAP_EPSILON);
 	  normallist[8] = VertexInterp(isolevel, grid.n[0], grid.n[4], grid.val[0], grid.val[4]);
   }
   if (edgeTable[cubeindex] & 512) {
-	  vertlist[9] = VertexInterp(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
+	  vertlist[9] = VertexInterp(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5], SNAP_EPSILON);
 	  normallist[9] = VertexInterp(isolevel, grid.n[1], grid.n[5], grid.val[1], grid.val[5]);
   }
   if (edgeTable[cubeindex] & 1024) {
-	  vertlist[10] = VertexInterp(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
+	  vertlist[10] = VertexInterp(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6], SNAP_EPSILON);
 	  normallist[10] = VertexInterp(isolevel, grid.n[2], grid.n[6], grid.val[2], grid.val[6]);
   }
   if (edgeTable[cubeindex] & 2048) {
-	  vertlist[11] = VertexInterp(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
+	  vertlist[11] = VertexInterp(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7], SNAP_EPSILON);
 	  normallist[11] = VertexInterp(isolevel, grid.n[3], grid.n[7], grid.val[3], grid.val[7]);
   }
   // Create the triangles
@@ -223,7 +225,7 @@ unsigned int VolumeVisualization::Polygonise(GRIDCELL grid,float isolevel,MC_TRI
   return(ntriang);
 }
 
-Vec3f VolumeVisualization::VertexInterp(float isolevel, Vec3f p1, Vec3f p2, float valp1, float valp2) {  
+Vec3f VolumeVisualization::VertexInterp(float isolevel, Vec3f p1, Vec3f p2, float valp1, float valp2, float snapEpsilon) {
   if (abs(isolevel-valp1) < 0.00001)
     return(p1);
   if (abs(isolevel-valp2) < 0.00001)
@@ -236,5 +238,15 @@ Vec3f VolumeVisualization::VertexInterp(float isolevel, Vec3f p1, Vec3f p2, floa
   p.x = p1.x + mu * (p2.x - p1.x);
   p.y = p1.y + mu * (p2.y - p1.y);
   p.z = p1.z + mu * (p2.z - p1.z);
+
+  // REMARKS: BONUS EXERCISE (b)
+  float snapEpsilonSqr = snapEpsilon * snapEpsilon;
+  if (((p - p1).sqlength() < snapEpsilonSqr) || ((p - p2).sqlength() < snapEpsilonSqr)) {
+	  if (mu < 0.5) {
+		  return p1;
+	  } else {
+		  return p2;
+	  }
+  }
   return(p);
 }
