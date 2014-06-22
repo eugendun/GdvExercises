@@ -72,7 +72,7 @@ public:
 	//
 
 	void loadRAW(std::istream& in, int dimX, int dimY, int dimZ, float dx=1, float dy=1, float dz=1);
-	void loadBarthsSextic(int dimX, int dimY, int dimZ, float dx = 1, float dy = 1, float dz = 1);
+	void loadTrivariateFunction(int dimX, int dimY, int dimZ, float dx = 1, float dy = 1, float dz = 1);
 
 	void computeMesh(float isovalue);
 
@@ -93,7 +93,8 @@ public:
 
 private:
 
-	float evaluateBarthsSextic(float x, float y, float z, float w);
+	float evaluateTrivariateFunction(float x, float y, float z);
+	Vec3f evaluateTrivariateFunctionNormal(float x, float y, float z);
 };
 
 #endif

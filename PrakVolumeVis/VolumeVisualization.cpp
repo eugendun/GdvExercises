@@ -16,7 +16,7 @@
 #include "TriangleMesh.h"
 #include "dualpointslist.h"
 
-#define SNAP_EPSILON 0.4
+#define SNAP_EPSILON 0.1
 
 void VolumeVisualization::loadRAW(std::istream& in, int dimX, int dimY, int dimZ, float dx, float dy, float dz) {
 	spacing.x = dx; spacing.y = dy; spacing.z = dz; 
@@ -51,20 +51,18 @@ void VolumeVisualization::loadRAW(std::istream& in, int dimX, int dimY, int dimZ
 	}
 }
 
-void VolumeVisualization::loadBarthsSextic(int dimX, int dimY, int dimZ, float dx, float dy, float dz) {
+void VolumeVisualization::loadTrivariateFunction(int dimX, int dimY, int dimZ, float dx, float dy, float dz) {
 	//spacing.x = dx; spacing.y = dy; spacing.z = dz;
 	spacing.x = 1; spacing.y = 1; spacing.z = 1;
 	dimension.x = dimX / dx; dimension.y = dimY / dy; dimension.z = dimZ / dz;
 	volumedata.clear();
 	volumedata.resize(dimension.x*dimension.y*dimension.z / (spacing.x*spacing.y*spacing.z));
 
-	const float W = 1;
-
-	// calculate sextic function
+	// calculate trivariate function
 	for (int z = 0; z < dimension.z; z += spacing.z)	{
 		for (int y = 0; y < dimension.y; y += spacing.y)	{
 			for (int x = 0; x < dimension.x; x += spacing.x)	{
-				volumedata[indexForCoordinates(x, y, z)] = evaluateBarthsSextic((x - dimension.x / 2) * dx, (y - dimension.y / 2) * dy, (z - dimension.z / 2) * dz, W);
+				volumedata[indexForCoordinates(x, y, z)] = evaluateTrivariateFunction(x * dx, y * dy, z * dz);
 			}
 		}
 	}
@@ -93,10 +91,22 @@ void VolumeVisualization::loadBarthsSextic(int dimX, int dimY, int dimZ, float d
 	}*/
 }
 
-float VolumeVisualization::evaluateBarthsSextic(float x, float y, float z, float w) {
-	float phi = 1.618034;
-	float result = 4 * (phi * phi * x * x - y * y) * (phi * phi * y * y - z * z) * (phi * phi * z * z - x * x) - (1 + 2 * phi) * (x * x + y * y + z * z - w * w) * (x * x + y * y + z * z - w * w) * w * w;
+float VolumeVisualization::evaluateTrivariateFunction(float x, float y, float z) {
+	float r = 10;
+	float xm = fmodf(x + 10000, 2 * r) - r;
+	float ym = fmodf(y + 10000, 2 * r) - r;
+	float zm = fmodf(z + 10000, 2 * r) - r;
+	float result = xm*xm + ym*ym + zm*zm - r*r;
 	return -result;
+}
+
+Vec3f VolumeVisualization::evaluateTrivariateFunctionNormal(float x, float y, float z) {
+	float r = 10;
+	float xm = fmodf(x + 10000, 2 * r) - r;
+	float ym = fmodf(y + 10000, 2 * r) - r;
+	float zm = fmodf(z + 10000, 2 * r) - r;
+	
+	return Vec3f(xm, ym, zm).normalized();
 }
 
 float VolumeVisualization::indexForCoordinates(float x, float y, float z) {
@@ -218,6 +228,10 @@ unsigned int VolumeVisualization::Polygonise(GRIDCELL grid,float isolevel,MC_TRI
 		triangles[ntriang].g[0] = normallist[triTable[cubeindex][i]];
 		triangles[ntriang].g[1] = normallist[triTable[cubeindex][i + 1]];
 		triangles[ntriang].g[2] = normallist[triTable[cubeindex][i + 2]];
+	} else {
+		triangles[ntriang].g[0] = evaluateTrivariateFunctionNormal(triangles[ntriang].p[0].x, triangles[ntriang].p[0].y, triangles[ntriang].p[0].z);
+		triangles[ntriang].g[1] = evaluateTrivariateFunctionNormal(triangles[ntriang].p[1].x, triangles[ntriang].p[1].y, triangles[ntriang].p[1].z);
+		triangles[ntriang].g[2] = evaluateTrivariateFunctionNormal(triangles[ntriang].p[2].x, triangles[ntriang].p[2].y, triangles[ntriang].p[2].z);
 	}
 
 	ntriang++;
