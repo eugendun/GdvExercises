@@ -75,6 +75,7 @@ public:
 	void loadTrivariateFunction(int dimX, int dimY, int dimZ, float dx = 1, float dy = 1, float dz = 1);
 
 	void computeMesh(float isovalue);
+	void computeMeshDMC(float isovalue);
 
 
 	// Given a grid cell and an isolevel, calculate the triangular
@@ -84,6 +85,12 @@ public:
 	//  0 will be returned if the grid cell is either totally above
 	//  of totally below the isolevel.
 	unsigned int Polygonise(GRIDCELL grid,float isolevel,MC_TRIANGLE *triangles);
+
+	/**
+	 * @param dualPoints 12 vectors, i.e. one dual point (or null) for each edge
+	 */
+	void PolygoniseDMC(GRIDCELL grid, float isolevel, Vec3f** dualPoints);
+	Vec3f generateDualPoint(MC_TRIANGLE* triangles, int indices);
 
 	// Linearly interpolate the position where an isosurface cuts an
 	//  edge between two vertices, each with their own scalar value

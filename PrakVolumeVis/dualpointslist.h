@@ -52,6 +52,24 @@ const int EDGE11 = 1 << 11;
 //  o--------2----------o
 //
 
+typedef int DMC_EDGE[2];
+DMC_EDGE nodesForEdge[12] = {
+	{0, 1},		// 0
+	{1, 2},		// 1
+	{2, 3},		// 2
+	{3, 0},		// 3
+	{4, 5},		// 4
+	{5, 6},		// 5
+	{6, 7},		// 6
+	{7, 4},		// 7
+	{0, 4},		// 8
+	{1, 5},		// 9
+	{2, 6},		// 10
+	{3, 7}		// 11
+};
+
+typedef std::vector<Vec3f> DMC_DUAL_POINTS;
+
 // the first table index is the cube configuration,
 // the second index is for up to four dual points.
 // Each value of a table entry encodes the edges with an associated dual point.
